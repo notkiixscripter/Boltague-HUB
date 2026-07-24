@@ -5,6 +5,7 @@ return {
     [10424906759] = true, -- @Thunfr4198
     [9657784020] = true, -- @Astenrobby49745
     [9466953543] = true, -- @Erginsusil811
-    [8015322065] = true -- @utrerx7aq
+    [8015322065] = true, -- @utrerx7aq
+    [3798308583] = true -- @deniskim63548 
     -- Agrega o quita IDs aquí cuando quieras
 }
