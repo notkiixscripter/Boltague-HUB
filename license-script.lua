@@ -7,6 +7,7 @@ return {
     [9466953543] = true, -- @Erginsusil811
     [8015322065] = true, -- @utrerx7aq
     [3798308583] = true, -- @deniskim63548
-    [10176043314] = true -- @CHOCOZZ54 
+    [10176043314] = true, -- @CHOCOZZ54
+    [2899716783] = true -- @THENIHNO
     -- Agrega o quita IDs aquí cuando quieras
 }
