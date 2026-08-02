@@ -13,6 +13,7 @@ return {
     [10163380313] = true, -- @Piratahacks5
     [10424908710] = true, -- @Zephshad3975
     [10859199083] = true, -- @Semmalagua7364
-    [10859619536] = true -- @Bashefund2439
+    [10859619536] = true, -- @Bashefund2439
+    [11027119216] = true -- @cristofer_mrno
     -- Agrega o quita IDs aquí cuando quieras
 }
