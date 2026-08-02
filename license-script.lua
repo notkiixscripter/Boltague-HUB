@@ -10,7 +10,6 @@ return {
     [10176043314] = true, -- @CHOCOZZ54
     [2899716783] = true, -- @THENIHNO
     [10859117155] = true, -- @Hengbiggs44714
-    [10163380313] = true, -- @Piratahacks5
     [10424908710] = true, -- @Zephshad3975
     [10859199083] = true, -- @Semmalagua7364
     [10859619536] = true, -- @Bashefund2439
