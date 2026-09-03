@@ -18,6 +18,7 @@ return {
     [11036007211] = true, -- @Lessevel4587
     [10859619536] = true, -- @Bashefund2439
     [10912394322] = true, -- @nose XD
-    [7870806220] = true
+    [7870806220] = true,
+    [11493329697] = true
     -- Agrega o quita IDs aquí cuando quieras
 }
