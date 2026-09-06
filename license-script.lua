@@ -19,6 +19,7 @@ return {
     [10859619536] = true, -- @Bashefund2439
     [10912394322] = true, -- @nose XD
     [7870806220] = true,
-    [11493329697] = true
+    [11493329697] = true,
+    [10912394322] = true -- @el gay de utrex
     -- Agrega o quita IDs aquí cuando quieras
 }
