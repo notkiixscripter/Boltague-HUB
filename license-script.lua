@@ -21,6 +21,7 @@ return {
     [7870806220] = true,
     [11493329697] = true,
     [10912394322] = true, -- @el gay de utrex
-    [10884538736] = true
+    [10884538736] = true,
+    [9580699294] = true
     -- Agrega o quita IDs aquí cuando quieras
 }
