@@ -33,6 +33,7 @@ return {
     [7732760787] = true,
     [10760300215] = true,
     [9576330865] = true,
-    [8744036907] = true
+    [8744036907] = true,
+    [9571641686] = true
     -- Agrega o quita IDs aquí cuando quieras
 }
