@@ -5,6 +5,8 @@ return {
     [10991472261] = true, -- @Jonahaslam746
     [5014679091] = true, -- @Samuelsancheez
     [9576330865] = true,
-    [8744036907] = true
+    [8744036907] = true,
+    [10763484615] = true,
+    [11417087044] = true
     -- Agrega o quita IDs aquí cuando quieras
 }
