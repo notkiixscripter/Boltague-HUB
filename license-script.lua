@@ -11,6 +11,7 @@ return {
     [10876143073] = true,
     [11418991955] = true,
     [11392230752] = true,
-    [4187247061] = true
+    [4187247061] = true,
+    [8836479976] = true
     -- Agrega o quita IDs aquí cuando quieras
 }
