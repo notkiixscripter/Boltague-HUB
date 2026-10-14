@@ -1,9 +1,10 @@
+-- # VERSION 1.0.4
+
 -- SERVICIOS
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
 local CoreGui = game:GetService("CoreGui")
 local Workspace = workspace
 
@@ -38,7 +39,7 @@ local function EsVisible(Parte)
     return not Resultado
 end
 
--- SISTEMA DE CÁMARA
+-- SISTEMA DE CÁMARA — CORREGIDO
 local function RestablecerCamara()
     if not LocalPlayer.Character then return end
     local Humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -53,7 +54,11 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-LocalPlayer.CharacterAdded:Connect(task.wrap(RestablecerCamara, 0.5))
+-- ✅ AQUÍ ESTABA EL ERROR — ELIMINADO task.wrap QUE NO EXISTE
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    RestablecerCamara()
+end)
 
 -- INTERFAZ GRÁFICA
 local Pantalla = CrearInstancia("ScreenGui", CoreGui, {
@@ -178,28 +183,23 @@ local ColoresRareza = {
     Legendary = Color3.fromRGB(255, 215, 0),
     Uncommon = Color3.fromRGB(128, 128, 128)
 }
-
 local function ObtenerColorRareza(Rareza)
     return ColoresRareza[Rareza] or Color3.fromRGB(255,255,255)
 end
-
 local function BuscarNombreHerramienta(Herramienta)
     if not Herramienta then return "Desconocido" end
     if CacheNombresHerramientas[Herramienta.Name] then
         return CacheNombresHerramientas[Herramienta.Name]
     end
-    
     local Mango = Herramienta:FindFirstChild("Handle")
     if not Mango then
         CacheNombresHerramientas[Herramienta.Name] = Herramienta.Name
         return Herramienta.Name
     end
-    
     local Componentes = {}
     for _, Hijo in ipairs(Mango:GetChildren()) do
         Componentes[Hijo.Name] = true
     end
-    
     for _, Fuente in ipairs({ReplicatedStorage:FindFirstChild("Items"), game:GetService("StarterPack")}) do
         if not Fuente then continue end
         for _, Item in ipairs(Fuente:GetDescendants()) do
@@ -218,11 +218,9 @@ local function BuscarNombreHerramienta(Herramienta)
             end
         end
     end
-    
     CacheNombresHerramientas[Herramienta.Name] = Herramienta.Name
     return Herramienta.Name
 end
-
 local function ObtenerHerramientasJugador(Jugador)
     local Lista = {}
     for _, Contenedor in ipairs({Jugador:FindFirstChild("Backpack"), Jugador.Character}) do
@@ -239,15 +237,12 @@ local function ObtenerHerramientasJugador(Jugador)
     end
     return Lista
 end
-
 local function CrearDisplayInventario(Jugador)
     if not Jugador then return end
-    EliminarDisplayInventario(Jugador) -- Limpiar anterior antes de crear
+    EliminarDisplayInventario(Jugador)
     if not Jugador.Character then return end
-    
     local Raiz = Jugador.Character:FindFirstChild("HumanoidRootPart")
     if not Raiz then return end
-    
     local Gui = CrearInstancia("BillboardGui", Raiz, {
         Name = "InventoryView",
         Size = UDim2.new(0, 300, 0, 100),
@@ -263,31 +258,25 @@ local function CrearDisplayInventario(Jugador)
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 2)
     })
-    
     ObjetosInventario[Jugador.Name] = {Gui = Gui, Contenedor = Contenedor}
 end
-
 local function ActualizarDisplayInventario(Jugador)
     if not ActivoInventario then return end
     if not ObjetosInventario[Jugador.Name] then
         CrearDisplayInventario(Jugador)
         if not ObjetosInventario[Jugador.Name] then return end
     end
-    
     local Herramientas = ObtenerHerramientasJugador(Jugador)
     local CadenaEstado = ""
     for _, H in ipairs(Herramientas) do
         CadenaEstado ..= H.Nombre .. H.Rareza .. tostring(H.Equipada)
     end
-    
     if EstadoInventario[Jugador.Name] == CadenaEstado then return end
     EstadoInventario[Jugador.Name] = CadenaEstado
-    
     local Contenedor = ObjetosInventario[Jugador.Name].Contenedor
     for _, Hijo in ipairs(Contenedor:GetChildren()) do
         if Hijo:IsA("TextLabel") then Hijo:Destroy() end
     end
-    
     for _, Herramienta in ipairs(Herramientas) do
         CrearInstancia("TextLabel", Contenedor, {
             Size = UDim2.new(1, 0, 0, 14),
@@ -301,7 +290,6 @@ local function ActualizarDisplayInventario(Jugador)
         })
     end
 end
-
 local function EliminarDisplayInventario(Jugador)
     if ObjetosInventario[Jugador.Name] then
         ObjetosInventario[Jugador.Name].Gui:Destroy()
@@ -321,17 +309,14 @@ local function EliminarESP(Personaje)
         Personaje.AnouarHighlight:Destroy()
     end
 end
-
 local function AplicarESP(Personaje)
     if not Personaje then return end
     local Jugador = Players:GetPlayerFromCharacter(Personaje)
     if not Jugador or Jugador == LocalPlayer then return end
     EliminarESP(Personaje)
-    
     local Cabeza = Personaje:FindFirstChild("Head")
     local Humanoide = Personaje:FindFirstChildOfClass("Humanoid")
     if not Cabeza or not Humanoide or not EstaVivo(Personaje) then return end
-    
     local GuiNombre = CrearInstancia("BillboardGui", Cabeza, {
         Name = "AnouarNameHP",
         Adornee = Cabeza,
@@ -339,7 +324,6 @@ local function AplicarESP(Personaje)
         StudsOffset = Vector3.new(0,2.8,0),
         AlwaysOnTop = true
     })
-    
     CrearInstancia("TextLabel", GuiNombre, {
         Size = UDim2.new(1,0,0,18),
         BackgroundTransparency = 1,
@@ -349,20 +333,17 @@ local function AplicarESP(Personaje)
         Font = Enum.Font.GothamBold,
         TextSize = 14
     })
-    
     local MarcoVida = CrearInstancia("Frame", GuiNombre, {
         Size = UDim2.new(1,-6,0,6),
         Position = UDim2.new(0,3,0,18),
         BackgroundColor3 = Color3.new(0,0,0)
     })
     CrearInstancia("UICorner", MarcoVida, {CornerRadius = UDim.new(0,3)})
-    
     local BarraVida = CrearInstancia("Frame", MarcoVida, {
         Size = UDim2.new(1,0,1,0),
         BackgroundColor3 = Color3.fromRGB(0,255,100)
     })
     CrearInstancia("UICorner", BarraVida, {CornerRadius = UDim.new(0,3)})
-    
     local EtiquetaVida = CrearInstancia("TextLabel", MarcoVida, {
         Size = UDim2.new(1,0,1,0),
         BackgroundTransparency = 1,
@@ -371,7 +352,6 @@ local function AplicarESP(Personaje)
         TextSize = 9,
         Font = Enum.Font.GothamBold
     })
-    
     local function ActualizarVida()
         if Humanoide.Parent and EstaVivo(Personaje) then
             local Porcentaje = math.clamp(Humanoide.Health / Humanoide.MaxHealth, 0, 1)
@@ -381,11 +361,9 @@ local function AplicarESP(Personaje)
             EliminarESP(Personaje)
         end
     end
-    
     Humanoide.HealthChanged:Connect(ActualizarVida)
     Humanoide.Died:Connect(function() EliminarESP(Personaje) end)
     ActualizarVida()
-    
     CrearInstancia("Highlight", Personaje, {
         Name = "AnouarHighlight",
         OutlineColor = Color3.fromRGB(255,215,0),
@@ -402,7 +380,6 @@ BotonESP.MouseButton1Click:Connect(function()
     BotonESP.BackgroundColor3 = NuevoColor
     ColoresBoton[BotonESP] = NuevoColor
 end)
-
 BotonInventario.MouseButton1Click:Connect(function()
     ActivoInventario = not ActivoInventario
     BotonInventario.Text = "InventoryView: " .. (ActivoInventario and "ON" or "OFF")
@@ -417,7 +394,6 @@ BotonInventario.MouseButton1Click:Connect(function()
         end
     end
 end)
-
 BotonAimbot.MouseButton1Click:Connect(function()
     ActivoAimbot = not ActivoAimbot
     BotonAimbot.Text = "Aimbot: " .. (ActivoAimbot and "ON" or "OFF")
@@ -446,7 +422,6 @@ BotonObjetivo.MouseButton1Click:Connect(function()
     BotonObjetivo.BackgroundColor3 = Modo.Color
     ColoresBoton[BotonObjetivo] = Modo.Color
 end)
-
 BotonPared.MouseButton1Click:Connect(function()
     ChequearPared = not ChequearPared
     BotonPared.Text = "Wallcheck: " .. (ChequearPared and "ON" or "OFF")
@@ -454,7 +429,6 @@ BotonPared.MouseButton1Click:Connect(function()
     BotonPared.BackgroundColor3 = NuevoColor
     ColoresBoton[BotonPared] = NuevoColor
 end)
-
 CampoFOV.FocusLost:Connect(function(EntradaPerdida)
     if EntradaPerdida then
         local Valor = tonumber(CampoFOV.Text:match("%d+"))
@@ -471,7 +445,6 @@ end)
 local function ActualizarListaProtegidos()
     for _, Boton in ipairs(BotonesJugador) do Boton:Destroy() end
     BotonesJugador = {}
-    
     for _, Jugador in ipairs(Players:GetPlayers()) do
         if Jugador == LocalPlayer then continue end
         local Protegido = JugadoresProtegidos[Jugador] or false
@@ -485,14 +458,12 @@ local function ActualizarListaProtegidos()
             AutoButtonColor = false
         })
         CrearInstancia("UICorner", Boton, {CornerRadius = UDim.new(0,6)})
-        
         table.insert(BotonesJugador, Boton)
         Boton.MouseButton1Click:Connect(function()
             JugadoresProtegidos[Jugador] = not JugadoresProtegidos[Jugador]
             ActualizarListaProtegidos()
         end)
     end
-    
     local CantidadProtegidos = 0
     for _ in pairs(JugadoresProtegidos) do CantidadProtegidos += 1 end
     EtiquetaInfo.Text = "Protegidos: " .. CantidadProtegidos .. " | Slots: ilimitados"
@@ -502,33 +473,25 @@ end
 local function ObtenerParteObjetivo(Personaje)
     local Modo = MODOS_MIRA[IndiceModoActual]
     local NombreParte = Modo.Partes and Modo.Partes[IndiceAutoActual] or Modo.Parte
-    
     local Parte = Personaje:FindFirstChild(NombreParte)
     if Parte then return Parte end
-    
     if NombreParte == "RightUpperArm" then
         Parte = Personaje:FindFirstChild("Right Arm")
     elseif NombreParte == "LeftUpperArm" then
         Parte = Personaje:FindFirstChild("Left Arm")
     end
-    
     return Parte or Personaje:FindFirstChild("Head") or Personaje:FindFirstChild("HumanoidRootPart")
 end
-
 local function BuscarObjetivoMasCercano()
     local Objetivo = nil
     local DistanciaMinima = math.huge
-    
     for _, Jugador in ipairs(Players:GetPlayers()) do
         if Jugador == LocalPlayer or JugadoresProtegidos[Jugador] then continue end
         if not Jugador.Character or not EstaVivo(Jugador.Character) then continue end
-        
         local ParteObjetivo = ObtenerParteObjetivo(Jugador.Character)
         if not ParteObjetivo then continue end
-        
         local PosicionPantalla, EnPantalla = Camera:WorldToViewportPoint(ParteObjetivo.Position)
         if not EnPantalla then continue end
-        
         local Distancia = (Vector2.new(PosicionPantalla.X, PosicionPantalla.Y) - Camera.ViewportSize/2).Magnitude
         if Distancia < DistanciaMinima and Distancia <= RadioFOV then
             if not ChequearPared or EsVisible(ParteObjetivo) then
@@ -540,15 +503,18 @@ local function BuscarObjetivoMasCercano()
     return Objetivo
 end
 
--- CÍRCULO FOV
-local CirculoFOV = Drawing and Drawing.new("Circle") or nil
-if CirculoFOV then
-    CirculoFOV.Thickness = 2
-    CirculoFOV.Color = Color3.fromRGB(255,0,0)
-    CirculoFOV.Transparency = 0.6
-    CirculoFOV.Filled = false
-    CirculoFOV.Visible = false
-end
+-- CÍRCULO FOV — PROTEGIDO CONTRA FALLO
+local CirculoFOV = nil
+pcall(function()
+    if Drawing then
+        CirculoFOV = Drawing.new("Circle")
+        CirculoFOV.Thickness = 2
+        CirculoFOV.Color = Color3.fromRGB(255,0,0)
+        CirculoFOV.Transparency = 0.6
+        CirculoFOV.Filled = false
+        CirculoFOV.Visible = false
+    end
+end)
 
 -- CONEXIONES PRINCIPALES
 RunService.RenderStepped:Connect(function()
@@ -557,7 +523,6 @@ RunService.RenderStepped:Connect(function()
         CirculoFOV.Radius = RadioFOV
         CirculoFOV.Visible = ActivoAimbot
     end
-    
     if ActivoAimbot then
         local Objetivo = BuscarObjetivoMasCercano()
         if Objetivo and Objetivo.Character then
@@ -569,10 +534,10 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- FUNCIÓN CENTRALIZADA PARA PROCESAR JUGADOR
+-- PROCESAR JUGADOR
 local function ProcesarJugador(Jugador)
     Jugador.CharacterAdded:Connect(function(Personaje)
-        task.wait(0.1) -- Pequeña espera para que cargue el personaje
+        task.wait(0.1)
         if ActivoESP then AplicarESP(Personaje) end
         if ActivoInventario then CrearDisplayInventario(Jugador) end
     end)
@@ -581,8 +546,6 @@ local function ProcesarJugador(Jugador)
         EliminarDisplayInventario(Jugador)
     end)
 end
-
--- ASIGNAR A JUGADORES EXISTENTES Y NUEVOS
 for _, Jugador in ipairs(Players:GetPlayers()) do
     if Jugador ~= LocalPlayer then
         ProcesarJugador(Jugador)
@@ -590,7 +553,7 @@ for _, Jugador in ipairs(Players:GetPlayers()) do
 end
 Players.PlayerAdded:Connect(ProcesarJugador)
 Players.PlayerRemoving:Connect(function(Jugador)
-    JugadoresProtegidos[Jugador] = nil -- Limpiar protección al salir
+    JugadoresProtegidos[Jugador] = nil
     EliminarDisplayInventario(Jugador)
     if Jugador.Character then EliminarESP(Jugador.Character) end
     ActualizarListaProtegidos()
@@ -598,21 +561,17 @@ end)
 
 -- BUCLE DE ACTUALIZACIÓN
 RunService.Heartbeat:Connect(function(DeltaTiempo)
-    -- ACTUALIZACIÓN ESP
     for _, Jugador in ipairs(Players:GetPlayers()) do
         if Jugador == LocalPlayer or not Jugador.Character then continue end
         local Personaje = Jugador.Character
         local TieneESP = Personaje:FindFirstChild("Head") 
             and Personaje.Head:FindFirstChild("AnouarNameHP")
-        
         if ActivoESP and not TieneESP then
             AplicarESP(Personaje)
         elseif not ActivoESP and TieneESP then
             EliminarESP(Personaje)
         end
     end
-    
-    -- ACTUALIZACIÓN INVENTARIO
     if ActivoInventario then
         for _, Jugador in ipairs(Players:GetPlayers()) do
             if Jugador ~= LocalPlayer then
@@ -620,8 +579,6 @@ RunService.Heartbeat:Connect(function(DeltaTiempo)
             end
         end
     end
-    
-    -- CAMBIO AUTOMÁTICO DE PARTE
     local Modo = MODOS_MIRA[IndiceModoActual]
     if ActivoAimbot and Modo.Partes then
         TiempoCambio += DeltaTiempo
